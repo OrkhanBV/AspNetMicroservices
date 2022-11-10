@@ -6,10 +6,10 @@ using System.Threading.Tasks;
 
 namespace Ordering.Application.Models
 {
-    class EmailSettings
+    public class EmailSettings
     {
         public string ApiKey { get; set; }
-        public string FromAdress { get; set; }
+        public string FromAddress { get; set; }
         public string FromName { get; set; }
     }
 }
