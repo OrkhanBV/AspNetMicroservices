@@ -36,6 +36,16 @@ services:
     ports:
         - "1433:1433"
 
+       # https://it-chainik.ru/rabbitmq-i-docker
+  rabbitmq:
+    container_name: rabbitmq
+    restart: always
+    ports:
+        # AMQP protocol port
+        - "5672:5672"
+        # HTTP management UI
+        - "15672:15672"
+
   pgadmin:
     container_name: pgadmin
     environment:
