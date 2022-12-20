@@ -1,11 +1,10 @@
-using AspnetRunBasics.Data;
-using AspnetRunBasics.Repositories;
+using AspnetRunBasics.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using System;
 
 namespace AspnetRunBasics
 {
@@ -21,29 +20,31 @@ namespace AspnetRunBasics
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            #region database services
+            //services.AddTransient<LoggingDelegatingHandler>();
 
-            //// use in-memory database
-            //services.AddDbContext<AspnetRunContext>(c =>
-            //    c.UseInMemoryDatabase("AspnetRunConnection"));
+            services.AddHttpClient<ICatalogService, CatalogService>(c =>
+                c.BaseAddress = new Uri(Configuration["ApiSettings:GatewayAddress"]));
+                //.AddHttpMessageHandler<LoggingDelegatingHandler>()
+                //.AddPolicyHandler(GetRetryPolicy())
+                //.AddPolicyHandler(GetCircuitBreakerPolicy());
 
-            // add database dependecy
-            services.AddDbContext<AspnetRunContext>(c =>
-                c.UseSqlServer(Configuration.GetConnectionString("AspnetRunConnection")));
+            services.AddHttpClient<IBasketService, BasketService>(c =>
+                c.BaseAddress = new Uri(Configuration["ApiSettings:GatewayAddress"]));
+                //.AddHttpMessageHandler<LoggingDelegatingHandler>()
+                //.AddPolicyHandler(GetRetryPolicy())
+                //.AddPolicyHandler(GetCircuitBreakerPolicy());
 
-            #endregion            
-
-            #region project services
-
-            // add repository dependecy
-            services.AddScoped<IProductRepository, ProductRepository>();
-            services.AddScoped<ICartRepository, CartRepository>();
-            services.AddScoped<IOrderRepository, OrderRepository>();
-            services.AddScoped<IContactRepository, ContactRepository>();
-
-            #endregion
+            services.AddHttpClient<IOrderService, OrderService>(c =>
+                c.BaseAddress = new Uri(Configuration["ApiSettings:GatewayAddress"]));
+                //.AddHttpMessageHandler<LoggingDelegatingHandler>()
+                //.AddPolicyHandler(GetRetryPolicy())
+                //.AddPolicyHandler(GetCircuitBreakerPolicy());
 
             services.AddRazorPages();
+
+            //services.AddHealthChecks()
+            //    .AddUrlGroup(new Uri(Configuration["ApiSettings:GatewayAddress"]), "Ocelot API Gw", HealthStatus.Degraded);
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
